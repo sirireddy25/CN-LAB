@@ -1,0 +1,121 @@
+R1:
+conf t
+inter f0/0
+ip address 192.168.60.1 255.255.255.0
+no shut
+exit
+inter f0/0.10
+encapsulation dot1q 10
+ip address 192.168.10.1 255.255.255.0
+no shut
+exit
+inter f0/0.30
+encapsulation dot1q 30
+ip address 192.168.30.1 255.255.255.0
+no shut
+exit
+inter f0/0.20
+encapsulation dot1q 20
+ip address 192.168.20.1 255.255.255.0
+no shut 
+exit
+inter s1/0
+ip address 192.168.1.1 255.255.255.128
+no shut
+exit
+
+ip domain lookup 
+ip name-server 192.168.1.2
+ip route 0.0.0.0 0.0.0.0 192.168.1.2
+router rip
+version 2
+network 192.168.60.0
+network 192.168.10.0
+network 192.168.20.0
+network 192.168.30.0
+network 192.168.1.0
+exit
+
+R2:
+conf t
+inter s1/0
+ip address 192.168.1.2 255.255.255.128
+no shut
+exit
+inter f0/0
+ip address 192.168.40.1 255.255.255.0
+ip helper 192.168.1.130
+no shut
+exit
+inter s1/1
+ip address 192.168.1.129 255.255.255.128
+no shut
+exit
+ip dns server 
+ip host www.siri.com 2.2.2.2
+interface loopback1
+ip address 2.2.2.2 255.255.255.255
+exit
+router rip
+version 2
+network 192.168.1.0
+network 192.168.1.128
+network 192.168.40.0
+exit
+
+
+R3:
+conf t
+inter s1/0
+ip address 192.168.1.130 255.255.255.128
+no shut
+exit
+inter f0/0
+ip address 192.168.50.1 255.255.255.0
+no shut
+exit
+ip dhcp pool pool1
+network 192.168.40.0 255.255.255.0
+default-router 192.168.40.1
+exit
+ip dhcp pool pool2
+network 192.168.50.0 255.255.255.0
+default-router 192.168.50.1
+exit
+ip domain lookup 
+ip name-server 192.168.1.2
+ip route 0.0.0.0 0.0.0.0 192.168.1.2
+router rip
+version 2
+network 192.168.1.128
+network 192.168.50.0
+exit
+
+
+PC1:
+ip 192.168.10.10 255.255.255.0 192.168.10.1
+
+ip dns 192.168.1.2
+
+PC3:
+ip 192.168.30.10 255.255.255.0 192.168.30.1
+
+ip dns 192.168.1.2
+
+
+PC4:
+ip 192.168.20.10 255.255.255.0 192.168.20.1
+
+ip dns 192.168.1.2
+
+
+PC5:
+dhcp
+
+ip dns 192.168.1.2
+
+
+PC7:
+dhcp
+
+ip dns 192.168.1.2

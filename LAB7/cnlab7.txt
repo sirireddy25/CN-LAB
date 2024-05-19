@@ -1,0 +1,61 @@
+R1:
+conf t
+inter f0/0
+ip addr 10.0.0.1 255.255.255.0
+no shut
+exit
+inter s1/0
+ip address 20.0.0.1 255.255.255.0
+clock rate 64000
+encapsulation ppp
+no shut
+exit
+ip route 30.0.0.0 255.255.255.0 20.0.0.2
+ip route 0.0.0.0 0.0.0.0 20.0.0.2
+ip domain lookup 
+ip name-server 30.0.0.2
+
+R2:
+conf t
+inter s1/0
+ip addr 20.0.0.2 255.255.255.0
+clock rate 64000
+encapsulation ppp
+no shut
+exit
+inter s1/1
+ip addr 30.0.0.1 255.255.255.0
+clock rate 64000
+encapsulation ppp
+no shut 
+exit
+ip domain lookup 
+ip name-server 30.0.0.2
+ip route 0.0.0.0 0.0.0.0 30.0.0.2
+ip route 10.0.0.0 255.255.255.0 20.0.0.1
+
+R3:
+conf t 
+inter s1/0
+ip addr 30.0.0.2 255.255.255.0 
+clock rate 64000
+encapsulation ppp
+no shut 
+exit
+ip route 20.0.0.0 255.255.255.0 30.0.0.1
+ip route 10.0.0.0 255.255.255.0 30.0.0.1
+ip dns server 
+ip host www.siri.com 2.2.2.2
+interface loopback 1
+ip address 2.2.2.2 255.255.255.255
+exit
+
+PC1:
+ip 10.0.0.2 255.255.255.0 10.0.0.1
+ip dns 30.0.0.2
+ping www.siri.com
+
+PC2:
+ip 10.0.0.3 255.255.255.0 10.0.0.1
+ip dns 30.0.0.2
+ping www.siri.com

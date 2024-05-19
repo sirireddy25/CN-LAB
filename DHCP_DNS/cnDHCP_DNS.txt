@@ -1,0 +1,64 @@
+R1:
+conf t
+hostname SIRI-1
+inter f0/0
+ip address 192.168.10.1 255.255.255.0
+ip helper 20.20.20.2
+no shut
+exit
+inter f0/1
+ip address 172.16.0.1 255.255.0.0
+ip helper 20.20.20.2
+no shut
+exit
+inter s1/0
+ip address 30.30.30.1 255.255.255.224
+no shut
+exit
+ip route 20.20.20.0 255.255.255.240 30.30.30.2
+
+R2:
+conf t
+hostname SIRI-2
+inter s1/0
+ip address 30.30.30.2 255.255.255.224
+no shut
+exit
+inter s1/1
+ip address 20.20.20.1 255.255.255.240
+no shut
+exit
+ip route 192.168.10.0 255.255.255.0 30.30.30.1
+ip route 172.16.0.0 255.255.0.0 30.30.30.1
+
+
+R3:
+conf t
+hostname SIRI-3
+inter s1/0
+ip address 20.20.20.2 255.255.255.240
+no shut
+exit
+ip route 30.30.30.0 255.255.255.24 20.20.20.1
+ip route 192.168.10.0 255.255.255.0 20.20.20.1
+ip route 172.16.0.0 255.255.0.0 20.20.20.1
+ip dns server 
+ip host www.siri.com 20.20.20.2
+ip dhcp excluded-address 192.168.10.1
+ip dhcp excluded-address 192.168.10.254
+ip dhcp excluded-address 172.168.0.1
+ip dhcp excluded-address 172.168.0.254
+ip dhcp pool POOL-CLASS-C
+network 192.168.10.0 255.255.255.0
+default-router 192.168.10.1
+exit
+ip dhcp pool POOL-CLASS-B
+network 172.16.0.0 255.255.0.0
+default-router 172.16.0.1
+exit
+
+
+PC1:
+dhcp
+ip dns 20.20.20.2
+ping www.siri.com

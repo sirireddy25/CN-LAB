@@ -1,0 +1,56 @@
+R1:
+conf t
+inter f0/0
+ip address 30.0.0.1 255.255.255.0
+no shut 
+exit
+inter s1/0
+ip address 40.0.0.1 255.255.255.0
+no shut 
+exit
+inter f0/0.1
+encapsulation dot1q 1
+ip address 10.0.0.1 255.255.255.0
+ip helper 40.0.0.2
+no shut 
+exit
+inter f0/0.2
+encapsulation dot1q 2
+ip address 20.0.0.1 255.255.255.0
+ip helper 40.0.0.2
+no shut 
+exit
+ip route 0.0.0.0 0.0.0.0 40.0.0.2
+ip domain lookup
+ip name-server 40.0.0.2 
+
+R2:
+conf t
+inter s1/0
+ip address 40.0.0.2 255.255.255.0
+no shut
+exit
+interface loopback1
+ip address 2.2.2.2 255.255.255.255
+exit
+ip dhcp pool vlan1
+network 10.0.0.0 255.255.255.0
+default-router 10.0.0.1
+exit
+ip dhcp pool vlan2
+network 20.0.0.0 255.255.255.0
+default-router 20.0.0.1
+exit
+ip dns server
+ip host www.siri.com 2.2.2.2
+ip route 10.0.0.0 255.255.255.0 40.0.0.1
+ip route 20.0.0.0 255.255.255.0 40.0.0.1
+
+
+
+
+PCs:
+dhcp
+
+ip dns 40.0.0.2
+

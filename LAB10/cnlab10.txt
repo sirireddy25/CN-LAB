@@ -1,0 +1,53 @@
+Q1(rip):
+
+R1:
+conf t
+inter s1/0
+ip address 100.1.1.2 255.255.255.0
+no shut 
+exit
+inter s1/1
+ip address 20.1.1.1 255.255.255.0
+no shut
+exit
+router rip
+version 2
+network 100.1.1.0 
+network 20.1.1.0
+
+R2:
+conf t
+inter f0/0
+ip address 172.16.2.1 255.255.0.0
+no shut
+exit
+inter s1/0
+ip address 100.1.1.1 255.255.255.0
+no shut
+exit
+router rip
+version 2
+network 172.16.2.0
+network 100.1.1.0
+
+R3:
+conf t
+inter f0/0
+ip address 10.2.2.1 255.255.255.0
+no shut
+exit
+inter s1/0
+ip address 20.1.1.2 255.255.255.0
+no shut 
+exit
+router rip
+version 2
+network 10.2.2.0
+network 20.1.1.0
+
+
+PC1:
+ip 172.16.2.10 255.255.0.0 172.16.2.1
+
+PC2:
+ip 10.2.2.10 255.255.255.0 10.2.2.1
